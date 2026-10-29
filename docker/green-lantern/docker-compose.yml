@@ -1,0 +1,14 @@
+services:
+  green-lantern:
+    image: python:3.12-slim
+    container_name: green-lantern
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
+      WHATSAPP_WEBHOOK_URL: ${WHATSAPP_WEBHOOK_URL}
+    volumes:
+      - ./app.py:/app/app.py:ro
+    command: sh -c "pip install --no-cache-dir fastapi uvicorn httpx && python /app/app.py"
+    ports:
+      - "127.0.0.1:8899:8899"

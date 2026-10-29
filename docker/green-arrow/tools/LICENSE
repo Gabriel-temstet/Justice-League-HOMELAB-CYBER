@@ -1,0 +1,96 @@
+LICENCE D'UTILISATION RESTREINTE - ÉDUCATION ET USAGE AUTORISÉ UNIQUEMENT
+(Educational and Authorized Use Only License)
+
+Copyright (c) 2026. Tous droits réservés.
+
+Ce logiciel comprend les fichiers audit_ports_localmachine.py,
+audit_reseau_machine_distante.py, requirements.txt et README.md
+(ci-après le « Logiciel »).
+
+--------------------------------------------------------------------------
+1. USAGES AUTORISÉS (les seuls)
+--------------------------------------------------------------------------
+
+Une autorisation limitée, personnelle, non exclusive, non transférable,
+non sous-licenciable et révocable est accordée pour utiliser, copier et
+étudier le Logiciel UNIQUEMENT dans l'un des cadres suivants :
+
+  a) Éducation : apprentissage, enseignement, formation ou recherche
+     académique, dans un environnement que vous possédez ou que vous
+     contrôlez (laboratoire personnel, machines virtuelles, réseau
+     domestique vous appartenant).
+
+  b) Audit autorisé : analyse de systèmes et de réseaux dont vous êtes le
+     propriétaire, OU pour lesquels vous disposez d'une autorisation
+     préalable, explicite et écrite du propriétaire ou de la personne
+     légalement habilitée à la donner, couvrant le périmètre et la
+     période de l'analyse.
+
+--------------------------------------------------------------------------
+2. USAGES INTERDITS
+--------------------------------------------------------------------------
+
+Sont strictement interdits :
+
+  a) toute utilisation sur un système, un équipement ou un réseau sans
+     droit ni autorisation écrite préalable ;
+  b) toute utilisation visant à porter atteinte à la confidentialité,
+     l'intégrité ou la disponibilité d'un système, ou à préparer, faciliter
+     ou réaliser une intrusion, une attaque ou une activité illicite ;
+  c) toute utilisation commerciale, y compris la vente, la location,
+     l'hébergement en tant que service, ou l'intégration dans un produit
+     ou service payant, sans accord écrit préalable du titulaire des
+     droits ;
+  d) la redistribution, la publication ou la sous-licence du Logiciel ou
+     de ses versions modifiées sans accord écrit préalable du titulaire
+     des droits ;
+  e) la suppression ou la modification des mentions de droit d'auteur, de
+     la présente licence ou des avertissements d'usage ;
+  f) l'utilisation du Logiciel pour entraîner des systèmes d'IA destinés à
+     des usages offensifs.
+
+Les modifications pour votre usage personnel éducatif ou autorisé (1) sont
+permises, mais elles restent soumises à la présente licence et ne peuvent
+pas être redistribuées.
+
+--------------------------------------------------------------------------
+3. RESPONSABILITÉ DE L'UTILISATEUR
+--------------------------------------------------------------------------
+
+Vous êtes seul responsable du respect des lois applicables (notamment
+celles relatives à l'accès frauduleux aux systèmes d'information et à la
+protection des données) et de l'obtention de toutes les autorisations
+nécessaires avant toute analyse. Le titulaire des droits n'est pas
+responsable de l'usage que vous faites du Logiciel.
+
+--------------------------------------------------------------------------
+4. RÉSILIATION
+--------------------------------------------------------------------------
+
+Toute violation de la présente licence met fin automatiquement et
+immédiatement à vos droits d'utilisation. Vous devez alors cesser toute
+utilisation et supprimer toutes les copies du Logiciel.
+
+--------------------------------------------------------------------------
+5. ABSENCE DE GARANTIE
+--------------------------------------------------------------------------
+
+LE LOGICIEL EST FOURNI « EN L'ÉTAT », SANS GARANTIE D'AUCUNE SORTE,
+EXPRESSE OU IMPLICITE, Y COMPRIS LES GARANTIES DE QUALITÉ MARCHANDE,
+D'ADÉQUATION À UN USAGE PARTICULIER ET D'ABSENCE DE CONTREFAÇON. EN
+AUCUN CAS LE TITULAIRE DES DROITS NE SAURAIT ÊTRE TENU RESPONSABLE DE
+DOMMAGES DIRECTS OU INDIRECTS (Y COMPRIS PERTE DE DONNÉES, INTERRUPTION
+DE SERVICE OU POURSUITES JUDICIAIRES) DÉCOULANT DE L'UTILISATION DU
+LOGICIEL OU DE L'IMPOSSIBILITÉ DE L'UTILISER. L'analyse d'un réseau peut
+perturber des équipements fragiles : vous l'effectuez à vos risques.
+
+--------------------------------------------------------------------------
+6. DROITS RÉSERVÉS ET DROIT APPLICABLE
+--------------------------------------------------------------------------
+
+Tous les droits non expressément accordés sont réservés. La présente
+licence est régie par le droit français. Les composants tiers (psutil,
+scapy, Npcap) restent soumis à leurs propres licences.
+
+Toute autre utilisation nécessite une autorisation écrite préalable du
+titulaire des droits.

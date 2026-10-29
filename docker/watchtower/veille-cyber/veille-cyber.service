@@ -1,0 +1,12 @@
+[Unit]
+Description=Veille cyber automatique
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/veille-cyber/veille_cyber.py --intervalle 1800
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

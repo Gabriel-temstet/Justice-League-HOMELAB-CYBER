@@ -1,0 +1,38 @@
+services:
+
+  martian-db:
+    image: postgres:16-alpine
+    container_name: martian-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: martian
+      POSTGRES_USER: martian
+      POSTGRES_PASSWORD: ${MARTIAN_DB_PASSWORD}
+    volumes:
+      - martian_db:/var/lib/postgresql/data
+    networks:
+      - justice
+
+
+  martian-core:
+    build: ./martian-core
+    container_name: martian-core
+    restart: unless-stopped
+    environment:
+      MARTIAN_DB_DSN: postgresql://martian:${MARTIAN_DB_PASSWORD}@martian-db:5432/martian
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+    depends_on:
+      - martian-db
+    ports:
+      - "127.0.0.1:8787:8787"
+    networks:
+      - justice
+
+volumes:
+  martian_db:
+
+networks:
+  justice:
+    driver: bridge

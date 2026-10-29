@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.kapelgy.veille</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/TON-NOM/veille-cyber/veille_cyber.py</string>
+        <string>--intervalle</string>
+        <string>1800</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/TON-NOM/veille-cyber/veille.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/TON-NOM/veille-cyber/veille.err.log</string>
+</dict>
+</plist>

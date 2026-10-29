@@ -1,0 +1,4 @@
+:8443 {
+    tls internal
+    reverse_proxy soc-command-center:8810
+}

@@ -1,0 +1,11 @@
+services:
+  uptime:
+    image: louislam/uptime-kuma:2
+    container_name: aquaman-uptime
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - uptime:/app/data
+volumes:
+  uptime:

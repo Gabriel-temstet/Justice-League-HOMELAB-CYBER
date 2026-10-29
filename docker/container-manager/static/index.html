@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Justice League Console</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><span class="logo" data-icon="shield"></span><div><b>Justice League</b><small>Console · Version Z</small></div></div>
+    <nav id="nav"></nav>
+    <div class="side-foot"><span id="hostline" class="muted">—</span></div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn burger" id="burger" aria-label="Menu" data-icon="menu"></button>
+      <h1 id="title">Tableau de bord</h1>
+      <div class="top-actions">
+        <span id="live" class="live" title="Actualisation automatique"><i></i><span>Live</span></span>
+        <button class="btn ghost" id="refresh" data-icon="refresh">Actualiser</button>
+        <button class="icon-btn" id="theme" aria-label="Thème" data-icon="moon"></button>
+      </div>
+    </header>
+    <main id="view" class="view" tabindex="-1"></main>
+  </div>
+</div>
+<div id="drawer" class="drawer" hidden></div>
+<div id="modal" class="modal" hidden></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

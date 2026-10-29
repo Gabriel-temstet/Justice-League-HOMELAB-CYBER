@@ -1,0 +1,343 @@
+# JUSTICE LEAGUE HOMELAB — VERSION Z (composition unique)
+services:
+  martian-db:
+    image: postgres:16-alpine
+    container_name: martian-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: martian
+      POSTGRES_USER: martian
+      POSTGRES_PASSWORD: ${MARTIAN_DB_PASSWORD}
+    volumes:
+    - martian_db:/var/lib/postgresql/data
+    networks:
+    - justice
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U martian -d martian
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  ollama:
+    image: ollama/ollama:latest
+    container_name: martian-ollama
+    profiles:
+    - ollama
+    restart: unless-stopped
+    volumes:
+    - ollama:/root/.ollama
+    networks:
+    - justice
+  martian-core:
+    build: ./martian-core
+    container_name: martian-core
+    restart: unless-stopped
+    environment:
+      MARTIAN_DB_DSN: postgresql://martian:${MARTIAN_DB_PASSWORD}@martian-db:5432/martian
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+    depends_on:
+      martian-db:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+        required: false
+    networks:
+    - justice
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/health')
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    extra_hosts:
+    - host.docker.internal:host-gateway
+  batman-postgres:
+    image: postgres:17-alpine
+    container_name: batman-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: justice
+      POSTGRES_USER: justice
+      POSTGRES_PASSWORD: ${BATMAN_DB_PASSWORD}
+    volumes:
+    - batman_db:/var/lib/postgresql/data
+    networks:
+    - justice
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U justice -d justice
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  batman-n8n:
+    image: n8nio/n8n:latest
+    container_name: batman-n8n
+    restart: unless-stopped
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: batman-postgres
+      DB_POSTGRESDB_DATABASE: justice
+      DB_POSTGRESDB_USER: justice
+      DB_POSTGRESDB_PASSWORD: ${BATMAN_DB_PASSWORD}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_SECURE_COOKIE: 'false'
+      N8N_DIAGNOSTICS_ENABLED: 'false'
+      GENERIC_TIMEZONE: ${TIMEZONE:-Europe/Paris}
+    ports:
+    - 127.0.0.1:5678:5678
+    volumes:
+    - n8n:/home/node/.n8n
+    depends_on:
+      batman-postgres:
+        condition: service_healthy
+    networks:
+    - justice
+  batman-normalizer:
+    build: ./batman
+    container_name: batman-normalizer
+    restart: unless-stopped
+    environment:
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    depends_on:
+      martian-core:
+        condition: service_healthy
+    networks:
+    - justice
+  green-lantern:
+    build: ./notify
+    container_name: green-lantern
+    restart: unless-stopped
+    environment:
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      NOTIFY_DRY_RUN: ${NOTIFY_DRY_RUN:-YES}
+      WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN:-}
+      WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID:-}
+      WHATSAPP_TO: ${WHATSAPP_TO:-}
+    networks:
+    - justice
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8898/health')
+      interval: 10s
+      timeout: 5s
+      retries: 20
+  collectors:
+    build: ./collectors
+    container_name: justice-league-collectors
+    restart: unless-stopped
+    environment:
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      GREEN_LANTERN_URL: http://green-lantern:8898
+      COLLECTOR_INTERVAL: ${COLLECTOR_INTERVAL:-5}
+      SURICATA_EVE_PATH: /logs/suricata/eve.json
+      ZEEK_CONN_PATH: /logs/zeek/conn.log.json
+      WAZUH_ALERTS_PATH: /logs/wazuh/alerts.json
+    volumes:
+    - ${LOG_ROOT:-../data/logs}:/logs:ro
+    depends_on:
+      martian-core:
+        condition: service_healthy
+    networks:
+    - justice
+  oracle-cti:
+    build: ./oracle
+    container_name: oracle-cti
+    restart: unless-stopped
+    environment:
+      CTI_FEEDS: ${CTI_FEEDS:-https://www.cert.ssi.gouv.fr/feed/;https://www.cisa.gov/cybersecurity-advisories/all.xml}
+      CTI_INTERVAL: ${CTI_INTERVAL:-900}
+      OSINT_DOMAINS: ${OSINT_DOMAINS:-}
+      OSINT_INTERVAL_HOURS: ${OSINT_INTERVAL_HOURS:-6}
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    volumes:
+    - oracle_data:/data
+    depends_on:
+      martian-core:
+        condition: service_healthy
+    networks:
+    - justice
+  green-arrow:
+    build: ./green-arrow
+    container_name: green-arrow
+    restart: unless-stopped
+    environment:
+      AUTHORIZED_CIDRS: ${AUTHORIZED_CIDRS:-}
+      DISCOVERY_INTERVAL: ${DISCOVERY_INTERVAL:-3600}
+      AUDIT_INTERVAL: ${AUDIT_INTERVAL:-86400}
+      SCAN_FULL_PORTS: ${SCAN_FULL_PORTS:-NO}
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    cap_add:
+    - NET_RAW
+    volumes:
+    - green_arrow_results:/results
+    depends_on:
+      martian-core:
+        condition: service_healthy
+    networks:
+    - justice
+  soc-command-center:
+    build: ./v8-api
+    container_name: justice-league-soc
+    restart: unless-stopped
+    environment:
+      MARTIAN_DB_DSN: postgresql://martian:${MARTIAN_DB_PASSWORD}@martian-db:5432/martian
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      SOC_ADMIN_USER: ${SOC_ADMIN_USER:-admin}
+      SOC_ADMIN_PASSWORD: ${SOC_ADMIN_PASSWORD}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+    depends_on:
+      martian-db:
+        condition: service_healthy
+      martian-core:
+        condition: service_healthy
+    networks:
+    - justice
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8810/health')
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    extra_hosts:
+    - host.docker.internal:host-gateway
+  caddy:
+    image: caddy:2-alpine
+    container_name: justice-league-caddy
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:8443:8443
+    volumes:
+    - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    - caddy_data:/data
+    - caddy_config:/config
+    depends_on:
+      soc-command-center:
+        condition: service_healthy
+    networks:
+    - justice
+  watchtower:
+    build: ./watchtower
+    container_name: justice-league-watchtower
+    restart: unless-stopped
+    environment:
+      TIMEZONE: ${TIMEZONE:-Europe/Paris}
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      MARTIAN_URL: http://martian-core:8787
+      GREEN_LANTERN_URL: http://green-lantern:8898
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      WATCH_INTERVAL: ${WATCH_INTERVAL:-1800}
+      WATCH_NVD_INTERVAL: ${WATCH_NVD_INTERVAL:-7200}
+      WATCH_KEV_INTERVAL: ${WATCH_KEV_INTERVAL:-21600}
+      WATCH_REPORT_HOUR: ${WATCH_REPORT_HOUR:-7}
+      WATCH_REPORT_MINUTE: ${WATCH_REPORT_MINUTE:-30}
+      WATCH_WEEKLY_DAY: ${WATCH_WEEKLY_DAY:-0}
+      WATCH_ALERT_MIN_SCORE: ${WATCH_ALERT_MIN_SCORE:-80}
+      WATCH_NOTIFY: ${WATCH_NOTIFY:-YES}
+      WATCH_AI_SUMMARY: ${WATCH_AI_SUMMARY:-NO}
+      WATCH_KEYWORDS: ${WATCH_KEYWORDS:-}
+      WATCH_RETENTION_DAYS: ${WATCH_RETENTION_DAYS:-180}
+      NVD_MIN_CVSS: ${NVD_MIN_CVSS:-8.0}
+      NVD_API_KEY: ${NVD_API_KEY:-}
+      VEILLE_INTERVALLE: ${VEILLE_INTERVALLE:-1800}
+    ports:
+    - 127.0.0.1:8830:8830
+    volumes:
+    - ../config/watchtower:/config:ro
+    - watchtower_data:/data
+    networks:
+    - justice
+    read_only: true
+    tmpfs:
+    - /tmp
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8830/health')
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    extra_hosts:
+    - host.docker.internal:host-gateway
+  bug-bounty-lab:
+    build:
+      context: ./bug-bounty
+    container_name: justice-league-bug-bounty
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+    - ../config/bug-bounty:/scope:ro
+    - bug_bounty_workspace:/workspace
+    - bug_bounty_results:/results
+    networks:
+    - justice
+    environment:
+    - TZ=Europe/Paris
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+  container-manager:
+    build: ./container-manager
+    container_name: justice-league-container-manager
+    restart: unless-stopped
+    environment:
+      SOC_ADMIN_USER: ${SOC_ADMIN_USER:-admin}
+      SOC_ADMIN_PASSWORD: ${SOC_ADMIN_PASSWORD}
+    ports:
+    - 127.0.0.1:8801:8801
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+    - justice
+    read_only: true
+    tmpfs:
+    - /tmp
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    depends_on:
+      soc-command-center:
+        condition: service_started
+volumes:
+  martian_db: null
+  batman_db: null
+  n8n: null
+  ollama: null
+  caddy_data: null
+  caddy_config: null
+  oracle_data: null
+  green_arrow_results: {}
+  watchtower_data: {}
+  bug_bounty_workspace: {}
+  bug_bounty_results: {}
+networks:
+  justice:
+    driver: bridge

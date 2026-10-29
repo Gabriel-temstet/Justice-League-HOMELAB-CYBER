@@ -1,0 +1,16 @@
+# Critical FortiSIEM Flaw Gets Public Exploit PoC for Unauthenticated Remote Code Execution
+
+- **Source** : The Hacker News
+- **Date** : Tue, 20 Oct 2026 21:08:52 +0530
+- **Lien** : https://thehackernews.com/2026/10/critical-fortisiem-flaw-gets-public.html
+- **Severite estimee** : CRITIQUE
+- **Pertinence** : Vulnerabilites / correctifs
+- **Resume** : extractif (premieres phrases de l'article)
+
+## Resume
+
+Cybersecurity researchers have released a proof-of-concept (PoC) exploit for a recently patched critical security flaw impacting Fortinet FortiSIEM that could result in arbitrary code execution. The vulnerability, tracked as CVE-2026-106173 (CVSS score: 9.4), is a critical path traversal flaw that could allow an unauthenticated attacker to execute unauthorized code or commands via specially
+
+## Pourquoi ca compte pour toi
+
+- Correctif a deployer : pense a tes clients MSP/PME (fenetre d'exposition) et a tes audits (verifier que le patchement est suivi).
