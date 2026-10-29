@@ -1,0 +1,16 @@
+services:
+  soc-command-center:
+    build: ./soc-command-center
+    container_name: justice-league-soc
+    restart: unless-stopped
+    environment:
+      MARTIAN_DB_DSN: postgresql://martian:${MARTIAN_DB_PASSWORD}@martian-db:5432/martian
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    depends_on:
+      - martian-db
+      - martian-core
+    ports:
+      - "127.0.0.1:8800:8800"
+    networks:
+      - justice

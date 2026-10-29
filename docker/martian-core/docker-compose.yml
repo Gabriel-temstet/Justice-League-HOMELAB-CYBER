@@ -1,0 +1,27 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: martian-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    networks: [justice_ai]
+
+  martian-core:
+    build: .
+    container_name: martian-core
+    restart: unless-stopped
+    environment:
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    ports:
+      - "127.0.0.1:${AI_GATEWAY_PORT:-8787}:8787"
+    depends_on: [ollama]
+    networks: [justice_ai]
+
+networks:
+  justice_ai:
+
+volumes:
+  ollama:

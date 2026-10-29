@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ $# -lt 1 ]]; then echo 'Usage: bb-run [--lab] <tool> [args...]'; exit 2; fi
+LAB_MODE=0
+if [[ "${1:-}" == "--lab" ]]; then LAB_MODE=1; shift; fi
+TOOL="$1"; shift
+ARGS=("$@")
+TARGETS=()
+for a in "${ARGS[@]}"; do
+  if [[ "$a" =~ ^https?:// || "$a" =~ ^[A-Za-z0-9._-]+\.[A-Za-z]{2,}$ || "$a" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then TARGETS+=("$a"); fi
+done
+if ((${#TARGETS[@]})); then
+  if (( LAB_MODE )); then scope-guard --lab "${TARGETS[@]}" >/dev/null; else scope-guard "${TARGETS[@]}" >/dev/null; fi
+fi
+printf '%s\t%s\t%s\n' "$(date -Is)" "$TOOL" "${ARGS[*]}" >> /results/command-audit.log 2>/dev/null || true
+exec "$TOOL" "${ARGS[@]}"

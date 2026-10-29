@@ -1,0 +1,53 @@
+{
+  "alert": {
+    "severity": "HIGH",
+    "src_ip": "10.10.20.25",
+    "dst_ip": "203.0.113.10",
+    "products": [
+      "example-product"
+    ],
+    "versions": [
+      "1.2.3"
+    ],
+    "indicators": [
+      "example-domain"
+    ]
+  },
+  "assets": [
+    {
+      "ip": "10.10.20.25",
+      "hostname": "WIN-01",
+      "products": [
+        "example-product"
+      ],
+      "version": "1.2.3"
+    }
+  ],
+  "cves": [
+    {
+      "id": "CVE-2026-0001",
+      "product": "example-product",
+      "affected_versions": [
+        "1.2.3"
+      ],
+      "severity": "HIGH"
+    }
+  ],
+  "cti": [
+    {
+      "title": "Example campaign",
+      "indicators": [
+        "example-domain"
+      ],
+      "source": "internal-feed"
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-09-28T21:00:00Z",
+      "src_ip": "10.10.20.25",
+      "event": "similar outbound connection"
+    }
+  ],
+  "ask_ai": true
+}

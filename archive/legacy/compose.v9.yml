@@ -1,0 +1,28 @@
+services:
+  bug-bounty-lab:
+    build:
+      context: ./bug-bounty
+    container_name: justice-league-bug-bounty
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../config/bug-bounty:/scope:ro
+      - bug_bounty_workspace:/workspace
+      - bug_bounty_results:/results
+    networks:
+      - justice
+    environment:
+      - TZ=Europe/Paris
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  bug_bounty_workspace:
+  bug_bounty_results:
+
+networks:
+  justice:
+    external: true

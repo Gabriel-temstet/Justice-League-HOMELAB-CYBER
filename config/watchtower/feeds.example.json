@@ -1,0 +1,24 @@
+{
+  "feeds": [
+    {"name": "CERT-FR", "url": "https://www.cert.ssi.gouv.fr/feed/", "weight": 20},
+    {"name": "CISA Advisories", "url": "https://www.cisa.gov/cybersecurity-advisories/all.xml", "weight": 20},
+    {"name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "weight": 10},
+    {"name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "weight": 10},
+    {"name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "weight": 12},
+    {"name": "SecurityWeek", "url": "https://feeds.feedburner.com/securityweek", "weight": 8},
+    {"name": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "weight": 8},
+    {"name": "The Record", "url": "https://therecord.media/feed", "weight": 10},
+    {"name": "SANS ISC", "url": "https://isc.sans.edu/rssfeed.xml", "weight": 12},
+    {"name": "Schneier on Security", "url": "https://www.schneier.com/feed/atom/", "weight": 6},
+    {"name": "Google Project Zero", "url": "https://googleprojectzero.blogspot.com/feeds/posts/default", "weight": 15},
+    {"name": "Cisco Talos", "url": "https://blog.talosintelligence.com/rss/", "weight": 12},
+    {"name": "Unit 42", "url": "https://unit42.paloaltonetworks.com/feed/", "weight": 12},
+    {"name": "Microsoft MSRC", "url": "https://msrc.microsoft.com/blog/feed", "weight": 15},
+    {"name": "ZATAZ", "url": "https://www.zataz.com/feed/", "weight": 8}
+  ],
+  "watchlist": [
+    "wazuh", "suricata", "zeek", "proxmox", "n8n", "ollama", "caddy", "postgresql",
+    "debian", "docker", "active directory", "kerberos", "microsoft exchange",
+    "fortinet", "palo alto", "cisco", "vmware", "openssh", "openvpn", "wordpress"
+  ]
+}

@@ -1,0 +1,21 @@
+services:
+  batman-normalizer:
+    build: ./batman
+    container_name: batman-normalizer
+    restart: unless-stopped
+    environment:
+      MARTIAN_URL: http://martian-core:8787
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+    depends_on: [martian-core]
+    ports: ["127.0.0.1:8790:8790"]
+    networks: [justice]
+  green-lantern-v6:
+    build: ./green-lantern
+    container_name: green-lantern-v6
+    restart: unless-stopped
+    environment:
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      NOTIFY_DRY_RUN: ${NOTIFY_DRY_RUN:-YES}
+    ports: ["127.0.0.1:8899:8899"]
+    networks: [justice]

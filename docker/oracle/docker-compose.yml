@@ -1,0 +1,14 @@
+services:
+  oracle:
+    image: python:3.12-slim
+    container_name: oracle-cti
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      CTI_FEEDS: ${CTI_FEEDS}
+    volumes:
+      - ./app.py:/app/app.py:ro
+      - oracle_data:/data
+    command: sh -c "pip install --no-cache-dir feedparser httpx && python /app/app.py"
+volumes:
+  oracle_data:

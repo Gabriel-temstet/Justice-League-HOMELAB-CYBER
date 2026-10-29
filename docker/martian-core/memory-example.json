@@ -1,0 +1,11 @@
+{
+  "event_type": "network_alert",
+  "source": "zeek",
+  "severity": "high",
+  "external_id": "zeek-2026-demo-001",
+  "data": {
+    "src_ip": "10.10.30.21",
+    "dst_ip": "10.10.30.50",
+    "signature": "suspicious outbound connection"
+  }
+}

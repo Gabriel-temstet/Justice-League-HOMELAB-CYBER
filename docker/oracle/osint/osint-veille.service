@@ -1,0 +1,11 @@
+[Unit]
+Description=Veille OSINT passive (domaines)
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/veille-osint/osint_veille.py --loop
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=default.target

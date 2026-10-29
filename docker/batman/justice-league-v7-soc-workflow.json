@@ -1,0 +1,117 @@
+{
+  "name": "Justice League V7 - Defensive SOC Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "justice-league-event",
+        "responseMode": "onReceived"
+      },
+      "id": "1",
+      "name": "Event Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://batman-normalizer:8790/normalize?forward=true",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.body || $json}}"
+      },
+      "id": "2",
+      "name": "BATMAN Normalize + Ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://justice-league-soc:8800/api/overview",
+        "options": {}
+      },
+      "id": "3",
+      "name": "SOC Snapshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.high_critical_24h}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "High/Critical Gate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        820,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Event Intake": {
+      "main": [
+        [
+          {
+            "node": "BATMAN Normalize + Ingest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BATMAN Normalize + Ingest": {
+      "main": [
+        [
+          {
+            "node": "SOC Snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SOC Snapshot": {
+      "main": [
+        [
+          {
+            "node": "High/Critical Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v7"
+}

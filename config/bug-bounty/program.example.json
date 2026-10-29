@@ -1,0 +1,8 @@
+{
+  "program": "replace-me",
+  "allow": ["example.com", "*.example.com"],
+  "exclude": ["admin.example.com"],
+  "rate_limit_rps": 2,
+  "active_testing": false,
+  "notes": "Replace with the exact authorization rules of the program."
+}

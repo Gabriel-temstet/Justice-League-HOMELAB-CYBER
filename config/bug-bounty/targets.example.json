@@ -1,0 +1,11 @@
+{
+  "allow": [
+    "example.com",
+    "*.example.com",
+    "192.0.2.0/24"
+  ],
+  "exclude": [
+    "admin.example.com"
+  ],
+  "notes": "Replace with exact targets explicitly authorized by the bug bounty program."
+}

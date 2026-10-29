@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: batman-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: justice
+      POSTGRES_USER: justice
+      POSTGRES_PASSWORD: ${BATMAN_DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: batman-n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_DATABASE: justice
+      DB_POSTGRESDB_USER: justice
+      DB_POSTGRESDB_PASSWORD: ${BATMAN_DB_PASSWORD}
+      N8N_ENCRYPTION_KEY: ${AI_GATEWAY_TOKEN}
+    volumes:
+      - n8n:/home/node/.n8n
+    depends_on: [postgres]
+volumes:
+  postgres:
+  n8n:

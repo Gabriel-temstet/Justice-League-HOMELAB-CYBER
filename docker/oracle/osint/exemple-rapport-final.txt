@@ -1,0 +1,37 @@
+# Rapport OSINT final - 2026-10-21 12:32
+
+Domaines analyses : 2 (sources publiques, passif)
+
+## Changements depuis le passage precedent
+- aucun (ou premier passage)
+
+## Resume par domaine
+
+| Domaine | Sous-dom. | DMARC | SPF | TLS (jours) | En-tetes absents |
+|---|---|---|---|---|---|
+| cert.ssi.gouv.fr | 9 | quarantine | oui | 182 | 1/6 |
+| kapelgy.com | 2 | none | oui | 22 | 2/6 |
+
+## cert.ssi.gouv.fr
+- Sous-domaines vus en CT : 9
+- IP : 92.38.146.58, 2a03:90c0:888e::3a
+- MX : 10 mail2.cert.ssi.gouv.fr
+- SPF : v=spf1 mx -all
+- DMARC : v=DMARC1; p=quarantine; rua=mailto:anssi.rua@emailsecurity.merox.io; ruf=mailto:anssi.ruf@emailsecurity.merox.io,mailto:dmarc+ruf@cert.cyber.gouv.fr; fo=1; aspf=s; adkim=s; (politique : quarantine)
+- TLS : {'expire': '2027-04-21', 'jours': 182, 'emetteur': 'Gandi SAS'}
+- En-tetes de securite absents : content-security-policy
+- Liste des sous-domaines : cert.ssi.gouv.fr, mail.cert.ssi.gouv.fr, mail2.cert.ssi.gouv.fr, misp.cert.ssi.gouv.fr, s01.cert.ssi.gouv.fr, s02.cert.ssi.gouv.fr, s03.cert.ssi.gouv.fr, s04.cert.ssi.gouv.fr, www.cert.ssi.gouv.fr
+- Points d'attention : aucun point majeur releve
+
+## kapelgy.com
+- Sous-domaines vus en CT : 2
+- IP : 51.91.236.255, 2001:41d0:301::29
+- MX : 0 kapelgy-com.mail.protection.outlook.com
+- SPF : v=spf1 include:spf.protection.outlook.com -all
+- DMARC : v=DMARC1; p=none; pct=100; sp=none; aspf=r (politique : none)
+- TLS : {'expire': '2026-11-12', 'jours': 22, 'emetteur': "Let's Encrypt"}
+- En-tetes de securite absents : strict-transport-security, content-security-policy
+- Liste des sous-domaines : kapelgy.com, www.kapelgy.com
+- Points d'attention : DMARC absent ou p=none : aucun blocage du phishing en son nom; certificat TLS a renouveler sous 30 jours; HSTS absent
+
+_Limites : passif uniquement ; pas de scan de ports ; pas de recherche de fuites ; les logs CT ne listent que les sous-domaines ayant un certificat public._

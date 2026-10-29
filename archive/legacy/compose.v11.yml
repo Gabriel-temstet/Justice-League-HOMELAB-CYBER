@@ -1,0 +1,48 @@
+# V11 — WATCHTOWER : veille technologique cyber automatisée (conteneur permanent)
+services:
+  watchtower:
+    build: ./watchtower
+    container_name: justice-league-watchtower
+    restart: unless-stopped
+    environment:
+      TIMEZONE: ${TIMEZONE:-Europe/Paris}
+      AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
+      MARTIAN_URL: http://martian-core:8787
+      GREEN_LANTERN_URL: http://green-lantern:8898
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      WATCH_INTERVAL: ${WATCH_INTERVAL:-1800}
+      WATCH_NVD_INTERVAL: ${WATCH_NVD_INTERVAL:-7200}
+      WATCH_KEV_INTERVAL: ${WATCH_KEV_INTERVAL:-21600}
+      WATCH_REPORT_HOUR: ${WATCH_REPORT_HOUR:-7}
+      WATCH_REPORT_MINUTE: ${WATCH_REPORT_MINUTE:-30}
+      WATCH_WEEKLY_DAY: ${WATCH_WEEKLY_DAY:-0}
+      WATCH_ALERT_MIN_SCORE: ${WATCH_ALERT_MIN_SCORE:-80}
+      WATCH_NOTIFY: ${WATCH_NOTIFY:-YES}
+      WATCH_AI_SUMMARY: ${WATCH_AI_SUMMARY:-NO}
+      WATCH_KEYWORDS: ${WATCH_KEYWORDS:-}
+      WATCH_RETENTION_DAYS: ${WATCH_RETENTION_DAYS:-180}
+      NVD_MIN_CVSS: ${NVD_MIN_CVSS:-8.0}
+      NVD_API_KEY: ${NVD_API_KEY:-}
+    ports: ["127.0.0.1:8830:8830"]
+    volumes:
+      - ../config/watchtower:/config:ro
+      - watchtower_data:/data
+    networks: [justice]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8830/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  watchtower_data:
+
+networks:
+  justice:
+    external: true
+    name: ${JUSTICE_NETWORK:-docker_justice}
