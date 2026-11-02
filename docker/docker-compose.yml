@@ -38,6 +38,10 @@ services:
       AI_GATEWAY_TOKEN: ${AI_GATEWAY_TOKEN}
       OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      RETENTION_ENABLED: ${RETENTION_ENABLED:-YES}
+      RETENTION_ONLINE_DAYS: ${RETENTION_ONLINE_DAYS:-90}
+      RETENTION_ARCHIVE_DAYS: ${RETENTION_ARCHIVE_DAYS:-180}
+      RETENTION_INTERVAL_HOURS: ${RETENTION_INTERVAL_HOURS:-6}
     depends_on:
       martian-db:
         condition: service_healthy
@@ -234,9 +238,9 @@ services:
         condition: service_healthy
     networks:
     - justice
-  watchtower:
-    build: ./watchtower
-    container_name: justice-league-watchtower
+  hawkman:
+    build: ./hawkman
+    container_name: justice-league-hawkman
     restart: unless-stopped
     environment:
       TIMEZONE: ${TIMEZONE:-Europe/Paris}
@@ -262,8 +266,8 @@ services:
     ports:
     - 127.0.0.1:8830:8830
     volumes:
-    - ../config/watchtower:/config:ro
-    - watchtower_data:/data
+    - ../config/hawkman:/config:ro
+    - hawkman_data:/data
     networks:
     - justice
     read_only: true
@@ -335,7 +339,7 @@ volumes:
   caddy_config: null
   oracle_data: null
   green_arrow_results: {}
-  watchtower_data: {}
+  hawkman_data: {}
   bug_bounty_workspace: {}
   bug_bounty_results: {}
 networks:

@@ -1,4 +1,4 @@
-"""WATCHTOWER — veille technologique cyber automatisée pour le homelab Justice League.
+"""HAWKMAN — veille technologique cyber automatisée pour le homelab Justice League.
 
 Tourne en continu : collecte RSS/Atom + CISA KEV + NVD, déduplique, note chaque
 élément, pousse l'important vers MARTIAN / GREEN LANTERN et génère un rapport
@@ -26,7 +26,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 # --------------------------------------------------------------------------- config
 DATA = os.getenv("WATCH_DATA", "/data")
 REPORTS = os.path.join(DATA, "reports")
-DB = os.path.join(DATA, "watchtower.db")
+DB = os.path.join(DATA, "hawkman.db")
 CONFIG_FILE = os.getenv("WATCH_CONFIG", "/config/feeds.json")
 TOKEN = os.getenv("AI_GATEWAY_TOKEN", "")
 MARTIAN = os.getenv("MARTIAN_URL", "http://martian-core:8787")
@@ -55,7 +55,7 @@ RETENTION_DAYS = env_int("WATCH_RETENTION_DAYS", 180)
 NOTIFY_ON = os.getenv("WATCH_NOTIFY", "YES").upper() == "YES"
 AI_SUMMARY = os.getenv("WATCH_AI_SUMMARY", "NO").upper() == "YES"
 NVD_API_KEY = os.getenv("NVD_API_KEY", "")
-UA = "Mozilla/5.0 (compatible; JusticeLeague-WATCHTOWER/1.0)"
+UA = "Mozilla/5.0 (compatible; JusticeLeague-HAWKMAN/1.0)"
 KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 NVD_URL = "https://services.nvd.nist.gov/rest/json/2.0/cves"
 
@@ -377,7 +377,7 @@ def send_alerts():
     if not rows:
         return 0
     lines = [f"• [{r['score']}] {r['title'][:140]} ({r['source']}) {r['link']}" for r in rows]
-    if notify("WATCHTOWER — alerte veille cyber", "\n".join(lines), "high"):
+    if notify("HAWKMAN — alerte veille cyber", "\n".join(lines), "high"):
         with _db_lock, connect() as c:
             c.executemany("update items set alerted=1 where id=?", [(r["id"],) for r in rows])
         return len(rows)
@@ -451,7 +451,7 @@ def render_md(rep, ai):
     label = "quotidien" if rep["period"] == "daily" else "hebdomadaire"
     now = datetime.now(TZ).strftime("%d/%m/%Y %H:%M")
     out = [f"# Rapport de veille cyber {label} — {datetime.now(TZ).strftime('%d/%m/%Y')}",
-           f"_Généré le {now} par WATCHTOWER — fenêtre : {rep['hours']} h_", "",
+           f"_Généré le {now} par HAWKMAN — fenêtre : {rep['hours']} h_", "",
            "## Chiffres clés",
            f"- {len(rep['rows'])} éléments analysés, issus de {rep['sources']} sources",
            f"- {len(rep['kev'])} ajout(s) CISA KEV (vulnérabilités exploitées activement)",
@@ -555,7 +555,7 @@ def run_report(period):
     top = rep["priority"][:5]
     body = f"{len(rep['rows'])} éléments, {len(rep['kev'])} KEV, {len(rep['priority'])} prioritaires.\n" + "\n".join(
         f"• [{r['score']}] {r['title'][:120]}" for r in top)
-    notify(f"WATCHTOWER — rapport {period} disponible ({stamp})", body, "info")
+    notify(f"HAWKMAN — rapport {period} disponible ({stamp})", body, "info")
     log(f"rapport {period} généré: {base}.md/.html")
     return base
 
@@ -619,12 +619,12 @@ def scheduler():
 async def lifespan(_):
     init_db()
     threading.Thread(target=scheduler, daemon=True, name="scheduler").start()
-    log("WATCHTOWER démarré")
+    log("HAWKMAN démarré")
     yield
 
 
 # --------------------------------------------------------------------------- API / UI
-app = FastAPI(title="WATCHTOWER", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="HAWKMAN", version="1.0.0", lifespan=lifespan)
 NAME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}-(daily|weekly)\.(md|html)$")
 
 
@@ -640,7 +640,7 @@ def health():
     with connect() as c:
         total = c.execute("select count(*) n from items").fetchone()["n"]
     feeds = json.loads(meta_get("feed_status", "{}"))
-    return {"status": "ok", "service": "WATCHTOWER", "items": total,
+    return {"status": "ok", "service": "HAWKMAN", "items": total,
             "last_fetch": meta_get("last_fetch"), "last_daily": meta_get("last_daily"),
             "feeds_ok": sum(1 for f in feeds.values() if f.get("ok")), "feeds_total": len(feeds),
             "feeds_errors": {k: v["error"] for k, v in feeds.items() if not v.get("ok")}}
@@ -695,7 +695,7 @@ def home():
     rl = "".join(f'<li><a href="/reports/{e(n)}">{e(n)}</a></li>' for n in reps if n.endswith(".html")) or "<li>Aucun rapport.</li>"
     return HTMLResponse(
         "<!doctype html><html lang='fr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-        "<title>WATCHTOWER</title><style>:root{color-scheme:light dark}body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:0 auto;padding:24px 16px}"
-        "li{margin:6px 0}ul{padding-left:18px}small{opacity:.7}</style></head><body><h1>WATCHTOWER — veille cyber</h1>"
+        "<title>HAWKMAN</title><style>:root{color-scheme:light dark}body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:0 auto;padding:24px 16px}"
+        "li{margin:6px 0}ul{padding-left:18px}small{opacity:.7}</style></head><body><h1>HAWKMAN — veille cyber</h1>"
         f"<h2>Rapports</h2><ul>{rl}</ul><h2>À surveiller (24 h, score ≥ 40)</h2><ul>{rows}</ul>"
         "<p><small><a href='/health'>état</a> · <a href='/items'>API items</a></small></p></body></html>")

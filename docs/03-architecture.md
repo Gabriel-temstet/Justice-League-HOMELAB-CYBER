@@ -18,10 +18,10 @@ flowchart LR
   BAT[BATMAN n8n + normalizer] <--> MART
   MART --> SOC[SOC COMMAND CENTER]
   CAD[Caddy TLS :8443] --> SOC
-  RSS --> WT[WATCHTOWER]; NVD --> WT
-  COL --> GL[GREEN LANTERN]; WT --> GL; GL --> DIS[Discord / WhatsApp]
+  RSS --> HM[HAWKMAN]; NVD --> HM
+  COL --> GL[GREEN LANTERN]; HM --> GL; GL --> DIS[Discord / WhatsApp]
   CON[CONSOLE :8801] -. docker.sock .-> ALL((Tous les conteneurs))
-  CON -. docker exec liste blanche .-> GA & ORA & WT
+  CON -. docker exec liste blanche .-> GA & ORA & HM
 ```
 
 ## Services
@@ -40,7 +40,7 @@ flowchart LR
 | `green-arrow` | `./green-arrow` (nmap, scapy, psutil) | Découverte d'actifs, audits de ports | `martian-core` | — |
 | `justice-league-soc` | `./v8-api` | Tableau de bord SOC, dossiers, assistant IA | `martian-db`, `martian-core` | — (interne `:8810`) |
 | `justice-league-caddy` | `caddy:2-alpine` | Proxy TLS devant le SOC | SOC (healthy) | `127.0.0.1:8443` |
-| `justice-league-watchtower` | `./watchtower` | Veille cyber + API | — | `127.0.0.1:8830` |
+| `justice-league-hawkman` | `./hawkman` | Veille cyber + API | — | `127.0.0.1:8830` |
 | `justice-league-bug-bounty` | `./bug-bounty` | Lab d'outils offensifs encadré | — | — |
 | `justice-league-container-manager` | `./container-manager` | Console web | — | `127.0.0.1:8801` |
 
@@ -65,8 +65,8 @@ BATMAN (n8n) peut orchestrer un flux plus riche : réception → normalisation (
 
 - **ORACLE** lit `CTI_FEEDS` toutes les `CTI_INTERVAL` s, dédoublonne (SQLite `/data/oracle.db`) et envoie chaque nouvel élément à MARTIAN (`entity_type=cti`).
 - **ORACLE OSINT** (`osint_veille.py`) : DNS, sous-domaines via Certificate Transparency, certificat TLS, en-têtes HTTP → rapports Markdown.
-- **WATCHTOWER** : flux RSS pondérés + CISA KEV + NVD ; score 0–100 (sévérité, watchlist, KEV, CVSS) ; rapports quotidien/hebdo (Markdown + HTML) ; alertes ≥ `WATCH_ALERT_MIN_SCORE` ; pousse les éléments à MARTIAN.
-- **veille_cyber.py** (intégré à WATCHTOWER) : second collecteur RSS qui produit un rapport Markdown par nouvelle.
+- **HAWKMAN** : flux RSS pondérés + CISA KEV + NVD ; score 0–100 (sévérité, watchlist, KEV, CVSS) ; rapports quotidien/hebdo (Markdown + HTML) ; alertes ≥ `WATCH_ALERT_MIN_SCORE` ; pousse les éléments à MARTIAN.
+- **veille_cyber.py** (intégré à HAWKMAN) : second collecteur RSS qui produit un rapport Markdown par nouvelle.
 
 ### 3. Inventaire d'actifs
 
@@ -74,7 +74,7 @@ GREEN ARROW exécute `nmap -sn` sur `AUTHORIZED_CIDRS` toutes les `DISCOVERY_INT
 
 ### 4. Pilotage
 
-La **Console** parle au démon Docker via `/var/run/docker.sock` (gestion des conteneurs) et exécute des **commandes en liste blanche** dans GREEN ARROW, ORACLE et WATCHTOWER via `docker exec`. Voir [Console](04-console.md).
+La **Console** parle au démon Docker via `/var/run/docker.sock` (gestion des conteneurs) et exécute des **commandes en liste blanche** dans GREEN ARROW, ORACLE et HAWKMAN via `docker exec`. Voir [Console](04-console.md).
 
 ## Mémoire MARTIAN (PostgreSQL)
 
@@ -82,6 +82,7 @@ La **Console** parle au démon Docker via `/var/run/docker.sock` (gestion des co
 |---|---|
 | `entities(entity_type, external_id, data, first_seen, last_seen)` | Actifs, indicateurs, éléments CTI |
 | `events(event_type, source, severity, event_time, external_id, data)` | Événements normalisés |
+| `events_archive(…)` | Événements de plus de 90 j (archive 180 j, puis purge) — voir [Exploitation](07-exploitation.md) |
 | `relationships(left_type, left_id, relation, right_type, right_id, confidence, evidence)` | Graphe (ex. événement *affects* actif) |
 | `investigations`, `investigation_events` | Enquêtes et leurs événements |
 | `soc_cases`, `soc_case_events`, `soc_notes`, `soc_audit` | Dossiers, notes et journal d'audit du SOC (créés par `justice-league-soc`) |
@@ -94,7 +95,7 @@ Le modèle est orienté preuve : les observations sont conservées séparément 
 |---|---|---|
 | 8801 | Console | `127.0.0.1` uniquement |
 | 8443 | SOC via Caddy (TLS interne) | `127.0.0.1` uniquement |
-| 8830 | WATCHTOWER | `127.0.0.1` uniquement |
+| 8830 | HAWKMAN | `127.0.0.1` uniquement |
 | 5678 | n8n | `127.0.0.1` uniquement |
 
 Pour un accès distant, utilisez un VPN ou un tunnel SSH : `ssh -L 8801:127.0.0.1:8801 utilisateur@serveur`. **Ne publiez jamais** ces ports sur Internet.
@@ -103,7 +104,7 @@ Pour un accès distant, utilisez un VPN ou un tunnel SSH : `ssh -L 8801:127.0.0.
 
 | Conteneur | Mesures |
 |---|---|
-| WATCHTOWER | utilisateur non-root (65532), système de fichiers en lecture seule, `cap_drop: ALL`, `no-new-privileges` |
+| HAWKMAN | utilisateur non-root (65532), système de fichiers en lecture seule, `cap_drop: ALL`, `no-new-privileges` |
 | Console | système de fichiers en lecture seule, `cap_drop: ALL`, `no-new-privileges` (monte le socket Docker : voir [Sécurité](08-securite.md)) |
 | Bug Bounty Lab | `cap_drop: ALL`, `no-new-privileges`, périmètre en lecture seule |
 | GREEN ARROW | `cap_add: NET_RAW` (ARP/scapy, nmap) |

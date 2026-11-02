@@ -1,4 +1,4 @@
-# Justice League Homelab
+# Justice League Homelab — Version Z
 
 > 📚 **Documentation complète : [`docs/`](docs/README.md)** — installation (Linux, macOS Apple Silicon), configuration, architecture, console, outils, API, exploitation, sécurité, dépannage, développement.
 
@@ -13,7 +13,7 @@ La **Justice League Console** remplace le simple gestionnaire : `http://127.0.0.
 - **Outils** : lancement en un clic des outils intégrés avec sortie en direct, puis navigation / aperçu / téléchargement des rapports (CSV rendus en tableau) :
   - GREEN ARROW : audit ports locaux, découverte ARP, nmap, scan TCP complet (cibles limitées à `AUTHORIZED_CIDRS`) ;
   - ORACLE : OSINT passif, ajout/retrait de domaines, passage immédiat ;
-  - WATCHTOWER : passage de veille, collecte flux / KEV / NVD, rapports quotidien et hebdomadaire.
+  - HAWKMAN : passage de veille, collecte flux / KEV / NVD, rapports quotidien et hebdomadaire.
 - **Tâches** : historique des actions d'outils. **Images / Volumes / Réseaux** : inventaire en lecture seule.
 
 Sécurité : lié à `127.0.0.1` (VPN ou tunnel SSH pour l'accès distant), Basic Auth avec limitation des tentatives, protection CSRF, en-têtes CSP, journal d'audit (`docker logs justice-league-container-manager`). **Aucune exécution de commande arbitraire** : seules les commandes en liste blanche de `docker/container-manager/tools.py` sont exécutables, avec paramètres validés. Pour ajouter un outil, ajoutez une entrée dans ce catalogue.
@@ -88,7 +88,7 @@ Toute nouvelle fonctionnalité doit être intégrée à cette version Z, sans cr
 - Collecteurs, ORACLE CTI et GREEN ARROW
 - GREEN LANTERN : notifications
 - SOC Command Center
-- WATCHTOWER : veille cyber
+- HAWKMAN : veille cyber
 - Bug Bounty Lab : environnement isolé pour cibles autorisées
 - Caddy : proxy local TLS
 - Container Manager : interface web Docker

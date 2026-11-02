@@ -32,7 +32,7 @@ def _domain(v):
     return v
 
 
-def _wt(task):
+def _hm(task):
     code = ("import os,sys,urllib.request as u;"
             "r=u.Request('http://127.0.0.1:8830/run/'+sys.argv[1],method='POST',"
             "headers={'X-AI-Gateway-Token':os.environ['AI_GATEWAY_TOKEN']});"
@@ -82,21 +82,21 @@ TOOLS = {
         "sources": {"domains": {"file": "/data/home/veille-osint/domaines.txt"}},
     },
     "veille": {
-        "title": "Veille cyber", "codename": "WATCHTOWER", "container": "justice-league-watchtower", "icon": "newspaper",
+        "title": "Veille cyber", "codename": "HAWKMAN", "container": "justice-league-hawkman", "icon": "newspaper",
         "desc": "Flux RSS cyber (CERT-FR, CISA…), CVE NVD/KEV, rapports quotidiens et hebdomadaires.",
         "actions": [
             {"id": "run", "label": "Passage veille RSS maintenant", "desc": "Un passage de veille_cyber.py.",
              "params": [], "timeout": 600,
              "build": lambda p: (["python", "/app/veille-cyber/veille_cyber.py", "--once"], {"VEILLE_DIR": "/data/veille-cyber"})},
-            {"id": "wt_fetch", "label": "WATCHTOWER · collecte flux", "desc": "Déclenche la tâche fetch.", "params": [], "timeout": 60, "build": _wt("fetch")},
-            {"id": "wt_kev", "label": "WATCHTOWER · CISA KEV", "desc": "Vulnérabilités exploitées activement.", "params": [], "timeout": 60, "build": _wt("kev")},
-            {"id": "wt_nvd", "label": "WATCHTOWER · NVD", "desc": "CVE récentes selon NVD_MIN_CVSS.", "params": [], "timeout": 60, "build": _wt("nvd")},
-            {"id": "wt_daily", "label": "WATCHTOWER · rapport quotidien", "desc": "Génère le rapport du jour.", "params": [], "timeout": 60, "build": _wt("daily")},
-            {"id": "wt_weekly", "label": "WATCHTOWER · rapport hebdo", "desc": "Génère le rapport de la semaine.", "params": [], "timeout": 60, "build": _wt("weekly")},
+            {"id": "hm_fetch", "label": "HAWKMAN · collecte flux", "desc": "Déclenche la tâche fetch.", "params": [], "timeout": 60, "build": _hm("fetch")},
+            {"id": "hm_kev", "label": "HAWKMAN · CISA KEV", "desc": "Vulnérabilités exploitées activement.", "params": [], "timeout": 60, "build": _hm("kev")},
+            {"id": "hm_nvd", "label": "HAWKMAN · NVD", "desc": "CVE récentes selon NVD_MIN_CVSS.", "params": [], "timeout": 60, "build": _hm("nvd")},
+            {"id": "hm_daily", "label": "HAWKMAN · rapport quotidien", "desc": "Génère le rapport du jour.", "params": [], "timeout": 60, "build": _hm("daily")},
+            {"id": "hm_weekly", "label": "HAWKMAN · rapport hebdo", "desc": "Génère le rapport de la semaine.", "params": [], "timeout": 60, "build": _hm("weekly")},
         ],
         "files": [{"id": "reports", "label": "Rapports veille RSS", "dir": "/data/veille-cyber/rapports"},
-                  {"id": "wt", "label": "Rapports WATCHTOWER", "dir": "/data/reports"}],
-        "link": {"label": "Ouvrir l'interface WATCHTOWER", "url": "http://127.0.0.1:8830"},
+                  {"id": "hm", "label": "Rapports HAWKMAN", "dir": "/data/reports"}],
+        "link": {"label": "Ouvrir l'interface HAWKMAN", "url": "http://127.0.0.1:8830"},
     },
 }
 

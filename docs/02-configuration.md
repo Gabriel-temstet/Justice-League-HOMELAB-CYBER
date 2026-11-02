@@ -10,7 +10,7 @@ Toute la configuration passe par **`config/config.env`** (copié depuis `config/
 |---|---|
 | `MARTIAN_DB_PASSWORD` | Mot de passe PostgreSQL de MARTIAN (mémoire/enquêtes) |
 | `BATMAN_DB_PASSWORD` | Mot de passe PostgreSQL de n8n |
-| `AI_GATEWAY_TOKEN` | Jeton partagé entre services (en-tête `X-AI-Gateway-Token`) pour MARTIAN, WATCHTOWER, collecteurs… |
+| `AI_GATEWAY_TOKEN` | Jeton partagé entre services (en-tête `X-AI-Gateway-Token`) pour MARTIAN, HAWKMAN, collecteurs… |
 | `N8N_ENCRYPTION_KEY` | Clé de chiffrement des identifiants stockés dans n8n. **À conserver** : la perdre rend les identifiants n8n illisibles |
 | `SOC_ADMIN_PASSWORD` | Mot de passe de la Console et du SOC Command Center |
 | `SOC_ADMIN_USER` | Identifiant admin (défaut `admin`) |
@@ -19,8 +19,8 @@ Toute la configuration passe par **`config/config.env`** (copié depuis `config/
 
 | Variable | Défaut | Description |
 |---|---|---|
-| `TIMEZONE` | `Europe/Paris` | Fuseau horaire (n8n, WATCHTOWER : heures des rapports) |
-| `OLLAMA_MODEL` | `llama3.2:3b` | Modèle utilisé par MARTIAN, le SOC et WATCHTOWER |
+| `TIMEZONE` | `Europe/Paris` | Fuseau horaire (n8n, HAWKMAN : heures des rapports) |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Modèle utilisé par MARTIAN, le SOC et HAWKMAN |
 | `OLLAMA_URL` | *(vide)* | Vide = conteneur Ollama (profil `ollama`). Sinon URL d'un Ollama externe, ex. `http://host.docker.internal:11434` (Ollama natif Mac) |
 | `LOG_ROOT` | `../data/logs` | Dossier des journaux de sondes monté en lecture seule dans les collecteurs (relatif à `docker/`, ou chemin absolu). Créé par `justice.sh deploy` |
 | `CONFIRM_INSTALL`, `SOC_BIND`, `SOC_PORT` | — | Hérités des anciennes versions, **non utilisés** par la version Z |
@@ -54,7 +54,18 @@ Les chemins lus par les collecteurs sont fixes dans le compose : `/logs/suricata
 | `AUDIT_INTERVAL` | `86400` | Secondes entre deux cycles d'audit automatique (ports locaux + découverte ARP) |
 | `SCAN_FULL_PORTS` | `NO` | `YES` = scan TCP complet (1–65535) de **chaque** machine découverte à chaque cycle. Bruyant, long : à n'activer que sur réseau autorisé |
 
-## Veille cyber (WATCHTOWER)
+## Rétention des événements (MARTIAN)
+
+| Variable | Défaut | Description |
+|---|---|---|
+| `RETENTION_ENABLED` | `YES` | `NO` désactive l'archivage et la purge automatiques |
+| `RETENTION_ONLINE_DAYS` | `90` | Durée en ligne (table `events`, visible dans le SOC) |
+| `RETENTION_ARCHIVE_DAYS` | `180` | Durée en archive (table `events_archive`) **après** la période en ligne, puis suppression définitive (270 j au total par défaut). Pour 180 j au total, mettre `90` |
+| `RETENTION_INTERVAL_HOURS` | `6` | Fréquence du passage automatique |
+
+Les événements rattachés à une enquête ou à un dossier SOC ne sont jamais archivés ni purgés.
+
+## Veille cyber (HAWKMAN)
 
 | Variable | Défaut | Description |
 |---|---|---|
@@ -77,7 +88,7 @@ Les chemins lus par les collecteurs sont fixes dans le compose : `/logs/suricata
 | Fichier | Rôle |
 |---|---|
 | `config/config.env` | Variables ci-dessus (secrets, non versionné) |
-| `config/watchtower/feeds.json` | Flux RSS (nom, URL, poids) et *watchlist* de produits. Modèle : `feeds.example.json`. Absent = flux par défaut. Monté en lecture seule dans `/config` |
+| `config/hawkman/feeds.json` | Flux RSS (nom, URL, poids) et *watchlist* de produits. Modèle : `feeds.example.json`. Absent = flux par défaut. Monté en lecture seule dans `/config` |
 | `config/bug-bounty/targets.json` | Périmètre **autorisé** (`allow`, `exclude`) lu par `scope-guard`. Modèle : `targets.example.json` |
 | `config/bug-bounty/program.json` | Règles du programme (cadence, tests actifs). Modèle : `program.example.json` |
 | `docker/caddy/Caddyfile` | Proxy TLS : `:8443 { tls internal; reverse_proxy soc-command-center:8810 }` |
@@ -115,7 +126,7 @@ Le `weight` est un score de base ajouté aux éléments du flux ; chaque mot de 
 | `ollama` | Modèles IA téléchargés | Non (re-téléchargeables) |
 | `caddy_data`, `caddy_config` | Certificat local Caddy | Non |
 | `oracle_data` | Base SQLite CTI + `home/veille-osint` (OSINT) | Non |
-| `watchtower_data` | Base, rapports WATCHTOWER, `veille-cyber/` | Non |
+| `hawkman_data` | Base, rapports HAWKMAN, `veille-cyber/` | Non |
 | `green_arrow_results` | CSV du scanner (`/results`) | Non |
 | `bug_bounty_workspace`, `bug_bounty_results` | Espace de travail et résultats du lab | Non |
 

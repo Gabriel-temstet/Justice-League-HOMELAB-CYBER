@@ -33,6 +33,20 @@ CREATE INDEX IF NOT EXISTS idx_events_time ON events(event_time DESC);
 CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type);
 CREATE INDEX IF NOT EXISTS idx_events_external ON events(external_id);
 
+-- Archive des événements (voir retention.py) : même structure que `events`, sans séquence ni FK.
+CREATE TABLE IF NOT EXISTS events_archive (
+    id BIGINT PRIMARY KEY,
+    event_type TEXT NOT NULL,
+    source TEXT,
+    severity TEXT,
+    event_time TIMESTAMPTZ NOT NULL,
+    external_id TEXT,
+    data JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    archived_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_events_archive_time ON events_archive(event_time);
+
 CREATE TABLE IF NOT EXISTS relationships (
     id BIGSERIAL PRIMARY KEY,
     left_type TEXT NOT NULL,
@@ -125,11 +139,16 @@ def recent_events(limit=100, source=None):
             "SELECT * FROM events ORDER BY event_time DESC LIMIT %s", (limit,)
         ).fetchall()
 
-def search_events(q: str, limit=50):
+def search_events(q: str, limit=50, include_archive=False):
     pattern = f"%{q}%"
+    source = "events"
+    if include_archive:
+        source = """(SELECT id,event_type,source,severity,event_time,external_id,data,created_at,false AS archived FROM events
+                     UNION ALL
+                     SELECT id,event_type,source,severity,event_time,external_id,data,created_at,true AS archived FROM events_archive) t"""
     with conn() as c:
         return c.execute(
-            """SELECT * FROM events
+            f"""SELECT * FROM {source}
                WHERE data::text ILIKE %s
                   OR COALESCE(external_id,'') ILIKE %s
                   OR COALESCE(source,'') ILIKE %s

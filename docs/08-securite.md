@@ -16,7 +16,7 @@ En France, l'accès ou le maintien frauduleux dans un système de traitement aut
 |---|---|
 | L'IA propose, l'humain décide | `human_approval_required` dès `high` ; aucune remédiation automatique ; l'IA répond uniquement à partir des preuves fournies |
 | Moindre exposition | Tous les ports publiés sont liés à `127.0.0.1` ; aucun service n'est destiné à Internet |
-| Moindre privilège | Conteneurs durcis (lecture seule, `cap_drop: ALL`, `no-new-privileges`, utilisateur non-root pour WATCHTOWER) ; seul GREEN ARROW reçoit `NET_RAW` |
+| Moindre privilège | Conteneurs durcis (lecture seule, `cap_drop: ALL`, `no-new-privileges`, utilisateur non-root pour HAWKMAN) ; seul GREEN ARROW reçoit `NET_RAW` |
 | Pas de secrets par défaut | `justice.sh check` refuse `CHANGE_ME` et les valeurs vides |
 | Liste blanche | La Console n'exécute que des commandes prédéfinies à paramètres validés |
 | Traçabilité | Journaux d'audit Console et SOC ; `command-audit.log` du Bug Bounty Lab |

@@ -8,6 +8,7 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 import memory
+import retention
 
 app = FastAPI(title="MARTIAN-MANHUNTER V5", version="5.0.0")
 TOKEN = os.getenv("AI_GATEWAY_TOKEN", "")
@@ -43,6 +44,7 @@ class InvestigateIn(BaseModel):
 @app.on_event("startup")
 def startup():
     memory.init_db()
+    retention.start()
 
 def auth(x_ai_gateway_token: str | None):
     if TOKEN and x_ai_gateway_token != TOKEN:
@@ -72,9 +74,19 @@ def events(limit: int = 100, source: str | None = None, x_ai_gateway_token: str 
     return {"events": memory.recent_events(min(limit, 500), source)}
 
 @app.get("/memory/search")
-def search(q: str, limit: int = 50, x_ai_gateway_token: str | None = Header(default=None)):
+def search(q: str, limit: int = 50, archive: bool = False, x_ai_gateway_token: str | None = Header(default=None)):
     auth(x_ai_gateway_token)
-    return {"events": memory.search_events(q, min(limit, 200))}
+    return {"events": memory.search_events(q, min(limit, 200), include_archive=archive)}
+
+@app.get("/retention/status")
+def retention_status(x_ai_gateway_token: str | None = Header(default=None)):
+    auth(x_ai_gateway_token)
+    return retention.status()
+
+@app.post("/retention/run")
+def retention_run(dry_run: bool = False, x_ai_gateway_token: str | None = Header(default=None)):
+    auth(x_ai_gateway_token)
+    return retention.run_once(dry_run=dry_run)
 
 @app.get("/memory/entity/{entity_type}/{external_id:path}")
 def entity(entity_type: str, external_id: str, x_ai_gateway_token: str | None = Header(default=None)):

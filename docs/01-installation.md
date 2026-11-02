@@ -89,8 +89,8 @@ docker exec martian-ollama ollama pull llama3.2:3b     # ou la valeur de OLLAMA_
 ## Configuration post-installation (optionnelle)
 
 ```bash
-# Flux et mots-clés de WATCHTOWER
-cp config/watchtower/feeds.example.json config/watchtower/feeds.json
+# Flux et mots-clés de HAWKMAN
+cp config/hawkman/feeds.example.json config/hawkman/feeds.json
 
 # Périmètre du Bug Bounty Lab (cibles AUTORISÉES uniquement)
 cp config/bug-bounty/targets.example.json config/bug-bounty/targets.json
@@ -105,7 +105,7 @@ Puis renseignez dans `config.env` : `AUTHORIZED_CIDRS` (scanner), `OSINT_DOMAINS
 |---|---|---|
 | **Console** | http://127.0.0.1:8801 | `SOC_ADMIN_USER` / `SOC_ADMIN_PASSWORD` (Basic Auth) |
 | SOC Command Center (via Caddy, TLS auto-signé) | https://127.0.0.1:8443 | formulaire (mêmes identifiants) |
-| WATCHTOWER | http://127.0.0.1:8830 | lecture libre en local ; `POST /run/*` nécessite le jeton |
+| HAWKMAN | http://127.0.0.1:8830 | lecture libre en local ; `POST /run/*` nécessite le jeton |
 | n8n (BATMAN) | http://127.0.0.1:5678 | compte créé au premier accès |
 
 Le navigateur affiche un avertissement pour le certificat de Caddy (`tls internal`) : c'est normal en local.

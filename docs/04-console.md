@@ -21,7 +21,7 @@ Tableau filtrable (nom, codename, image, port) et triable (nom, CPU, mémoire, �
 La Console refuse de s'arrêter ou de se mettre en pause elle-même.
 
 ### Outils
-Une carte par outil (GREEN ARROW, ORACLE, WATCHTOWER) avec : état du conteneur, avertissement d'usage légal, **boutons d'action**, et un **navigateur de fichiers** des résultats (dossiers, aperçu, téléchargement ; les CSV sont affichés en tableau).
+Une carte par outil (GREEN ARROW, ORACLE, HAWKMAN) avec : état du conteneur, avertissement d'usage légal, **boutons d'action**, et un **navigateur de fichiers** des résultats (dossiers, aperçu, téléchargement ; les CSV sont affichés en tableau).
 
 Lancer une action :
 1. Cliquer sur l'action ; si elle a des paramètres, un formulaire s'ouvre (sous-réseau, IP, domaine…).

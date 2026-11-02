@@ -47,9 +47,9 @@ Commandes de base : `./justice.sh doctor`, `./justice.sh status`, `docker logs -
 | « Aucun domaine. Ajoute-en… » | Renseigner `OSINT_DOMAINS` ou utiliser l'action **Ajouter un domaine** |
 | `crt.sh KO … repli certspotter` | crt.sh est souvent lent/indisponible : le repli est automatique ; réessayer plus tard |
 | Résultats DNS vides | DoH bloqué par le pare-feu sortant (Cloudflare/Google) |
-| WATCHTOWER `feeds_errors` non vide | Flux indisponible ou URL changée : corriger `config/watchtower/feeds.json` |
+| HAWKMAN `feeds_errors` non vide | Flux indisponible ou URL changée : corriger `config/hawkman/feeds.json` |
 | NVD lent / 403 / 429 | Renseigner `NVD_API_KEY` ; augmenter `WATCH_NVD_INTERVAL` |
-| `veille_cyber.py` : « téléchargement impossible » | Sortie HTTPS bloquée (proxy/pare-feu) ; vérifier depuis le conteneur : `docker exec justice-league-watchtower python -c "import urllib.request;print(urllib.request.urlopen('https://www.cert.ssi.gouv.fr/feed/').status)"` |
+| `veille_cyber.py` : « téléchargement impossible » | Sortie HTTPS bloquée (proxy/pare-feu) ; vérifier depuis le conteneur : `docker exec justice-league-hawkman python -c "import urllib.request;print(urllib.request.urlopen('https://www.cert.ssi.gouv.fr/feed/').status)"` |
 | Les alertes ne partent pas | `NOTIFY_DRY_RUN=YES` (défaut) ou webhook vide ; vérifier `GET green-lantern:8898/health` |
 
 ## SOC, MARTIAN, IA

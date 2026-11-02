@@ -13,7 +13,7 @@ Plateforme **SOC / veille cyber / OSINT / audit réseau** auto-hébergée, orche
 | 3 | [Architecture](03-architecture.md) | Services, flux de données, ports, volumes, réseaux, base de données |
 | 4 | [Console web](04-console.md) | Guide utilisateur de la Justice League Console (Portainer-like + outils) |
 | 5 | [Outils intégrés](05-outils-integres.md) | Scanner de ports, OSINT passif, veille cyber, Bug Bounty Lab |
-| 6 | [Référence des API](06-reference-api.md) | Endpoints de MARTIAN, BATMAN, GREEN LANTERN, WATCHTOWER, SOC, Console |
+| 6 | [Référence des API](06-reference-api.md) | Endpoints de MARTIAN, BATMAN, GREEN LANTERN, HAWKMAN, SOC, Console |
 | 7 | [Exploitation](07-exploitation.md) | `justice.sh`, supervision, sauvegarde/restauration, mises à jour, maintenance |
 | 8 | [Sécurité](08-securite.md) | Modèle de menace, durcissement, cadre légal, bonnes pratiques |
 | 9 | [Dépannage](09-depannage.md) | Problèmes fréquents (Linux, macOS ARM64) et solutions |
@@ -41,7 +41,7 @@ open http://127.0.0.1:8801    # Console (macOS) — xdg-open sous Linux
 | **GREEN ARROW** | Découverte d'actifs et scanner de ports | `green-arrow` |
 | **GREEN LANTERN** | Notifications Discord / WhatsApp | `green-lantern` |
 | **SOC COMMAND CENTER** | Tableau de bord SOC, dossiers, assistant IA | `justice-league-soc` |
-| **WATCHTOWER** | Veille cyber automatisée (RSS, CVE NVD, CISA KEV) | `justice-league-watchtower` |
+| **HAWKMAN** | Veille cyber automatisée (RSS, CVE NVD, CISA KEV) | `justice-league-hawkman` |
 | **BUG BOUNTY LAB** | Environnement isolé pour tests autorisés | `justice-league-bug-bounty` |
 | **CADDY** | Proxy TLS local devant le SOC | `justice-league-caddy` |
 | **CONSOLE** | Gestion Docker + lancement des outils | `justice-league-container-manager` |

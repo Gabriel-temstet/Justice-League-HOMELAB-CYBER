@@ -6,7 +6,7 @@ Quatre outils s'exécutent dans les conteneurs. Les trois premiers démarrent **
 |---|---|---|---|
 | Scanner de ports | `green-arrow` | `Scanner_de_port_ouverts.zip` | `start.sh` → `scanner.sh` + `run_audits.py` |
 | OSINT passif | `oracle-cti` | `Tools_custom_OSINT.zip` | `start.sh` → `osint_veille.py --loop` + collecteur CTI |
-| Veille cyber (RSS) | `justice-league-watchtower` | `Veille_techno_TOOLS_custom.zip` | `start.sh` → `veille_cyber.py` + API WATCHTOWER |
+| Veille cyber (RSS) | `justice-league-hawkman` | `Veille_techno_TOOLS_custom.zip` | `start.sh` → `veille_cyber.py` + API HAWKMAN |
 | Bug Bounty Lab | `justice-league-bug-bounty` | natif | manuel (`docker exec`) |
 
 Chaque conteneur exécute l'outil **en parallèle** de son service d'origine ; si l'un des deux s'arrête, le conteneur s'arrête et Docker le redémarre (`restart: unless-stopped`) — sauf pour OSINT et veille, relancés en boucle par le script de démarrage.
@@ -111,10 +111,10 @@ Le guide d'origine (`guide-osint-veille-*.docx`) et un exemple de rapport sont d
 
 ## 5.3 Veille cyber
 
-Deux mécanismes complémentaires dans WATCHTOWER :
+Deux mécanismes complémentaires dans HAWKMAN :
 
-### a) WATCHTOWER (application native, API sur `:8830`)
-Flux RSS pondérés + **CISA KEV** + **NVD** (CVSS ≥ `NVD_MIN_CVSS`), score 0–100, *watchlist* de vos produits, rapports quotidien et hebdomadaire (Markdown + HTML), alertes via GREEN LANTERN. Interface HTML sur http://127.0.0.1:8830 et API ([référence](06-reference-api.md#watchtower)). Rapports dans `/data/reports`.
+### a) HAWKMAN (application native, API sur `:8830`)
+Flux RSS pondérés + **CISA KEV** + **NVD** (CVSS ≥ `NVD_MIN_CVSS`), score 0–100, *watchlist* de vos produits, rapports quotidien et hebdomadaire (Markdown + HTML), alertes via GREEN LANTERN. Interface HTML sur http://127.0.0.1:8830 et API ([référence](06-reference-api.md#hawkman)). Rapports dans `/data/reports`.
 
 ### b) `veille_cyber.py` (outil intégré)
 Collecte 8 flux (CERT-FR, CISA, BleepingComputer, The Hacker News, SecurityWeek, Krebs on Security, ZATAZ, IT-Connect), dédoublonne (`etat.json`), génère **un rapport Markdown par nouvelle** (résumé, impact, tags métier : NIS2/conformité, PQC/crypto, MSP…) et une synthèse quotidienne. Stdlib Python uniquement ; option `--ollama MODELE` pour des résumés IA (non utilisable tel quel depuis le conteneur : l'outil vise `localhost:11434`).
@@ -128,10 +128,10 @@ Collecte 8 flux (CERT-FR, CISA, BleepingComputer, The Hacker News, SecurityWeek,
 | Action | Effet |
 |---|---|
 | Passage veille RSS maintenant | `veille_cyber.py --once` |
-| WATCHTOWER · collecte flux / CISA KEV / NVD | `POST /run/fetch`, `/run/kev`, `/run/nvd` |
-| WATCHTOWER · rapport quotidien / hebdo | `POST /run/daily`, `/run/weekly` |
+| HAWKMAN · collecte flux / CISA KEV / NVD | `POST /run/fetch`, `/run/kev`, `/run/nvd` |
+| HAWKMAN · rapport quotidien / hebdo | `POST /run/daily`, `/run/weekly` |
 
-Les tâches WATCHTOWER sont asynchrones : la Console affiche `{"started": "..."}` ; le résultat apparaît dans les rapports et `/health`.
+Les tâches HAWKMAN sont asynchrones : la Console affiche `{"started": "..."}` ; le résultat apparaît dans les rapports et `/health`.
 
 ---
 

@@ -11,7 +11,7 @@ dc(){ docker compose --env-file "$ENV_FILE" -f "$COMPOSE" $(profiles) "$@"; }
 prepare_dirs(){
   local lr; lr="$(env_value LOG_ROOT 2>/dev/null || true)"; lr="${lr:-../data/logs}"
   if [[ "$lr" != /* ]]; then lr="$ROOT/docker/$lr"; fi
-  mkdir -p "$lr" "$ROOT/config/watchtower" "$ROOT/config/bug-bounty" 2>/dev/null || true
+  mkdir -p "$lr" "$ROOT/config/hawkman" "$ROOT/config/bug-bounty" 2>/dev/null || true
 }
 usage(){ cat <<'EOF'
 Justice League Homelab — Version Z
@@ -74,7 +74,7 @@ case "${1:-}" in
    mkdir -p "$dest"
    dc exec -T martian-db sh -lc 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > "$dest/martian.sql"
    dc exec -T batman-postgres sh -lc 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > "$dest/batman.sql"
-   tar -czf "$dest/config-and-reports.tgz" config/watchtower config/bug-bounty 2>/dev/null || true
+   tar -czf "$dest/config-and-reports.tgz" config/hawkman config/bug-bounty 2>/dev/null || true
    echo "Sauvegarde créée: $dest (copie-la également hors de l'hôte)."
    ;;
  *) usage; exit 2 ;;

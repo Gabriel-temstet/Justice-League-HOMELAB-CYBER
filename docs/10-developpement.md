@@ -9,7 +9,7 @@ justice-league-homelab-z/
 ├── docs/                           # cette documentation
 ├── config/
 │   ├── config.env.example          # modèle de configuration (copier vers config.env)
-│   ├── watchtower/feeds.example.json
+│   ├── hawkman/feeds.example.json
 │   └── bug-bounty/{targets,program}.example.json
 ├── docker/
 │   ├── docker-compose.yml          # stack complète (source de vérité)
@@ -20,7 +20,7 @@ justice-league-homelab-z/
 │   ├── collectors/  notify/        # collecteurs de journaux ; GREEN LANTERN
 │   ├── oracle/                     # CTI (app.py) + osint/ + start.sh + tool_cli.py
 │   ├── green-arrow/                # scanner.sh + tools/ + run_audits.py + tool_cli.py + start.sh
-│   ├── watchtower/                 # app.py (API) + veille-cyber/ + start.sh
+│   ├── hawkman/                 # app.py (API) + veille-cyber/ + start.sh
 │   ├── bug-bounty/                 # Dockerfile, scope-guard.py, bb-run, workflows/, templates/
 │   ├── caddy/  ops/                # Caddyfile ; healthcheck.py
 │   ├── compose.yml  soc-command-center/   # hérités, non utilisés
@@ -98,7 +98,7 @@ Réalisés pendant le développement (environnement Linux x86_64, conteneurs de 
 
 | Évolution | Détail |
 |---|---|
-| Outils intégrés | Scanner de ports → `green-arrow`, OSINT → `oracle-cti`, veille cyber → `watchtower`, lancés au démarrage des conteneurs |
+| Outils intégrés | Scanner de ports → `green-arrow`, OSINT → `oracle-cti`, veille cyber → `hawkman`, lancés au démarrage des conteneurs |
 | Justice League Console | Remplace le Container Manager : tableau de bord, conteneurs, outils, tâches, inventaires |
 | Compatibilité ARM64 / macOS | `LOG_ROOT` portable, profil `ollama` + `OLLAMA_URL`, build Bug Bounty tolérant, `justice.sh doctor` |
 | Correctif | `bb-pipeline.sh` et les gabarits de rapport sont désormais copiés dans l'image du Bug Bounty Lab |

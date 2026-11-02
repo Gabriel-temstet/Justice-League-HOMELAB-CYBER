@@ -68,7 +68,7 @@ Score = 20 points par correspondance (+20 si historique) plafonné à 100 ; `cri
 | GET | `/health` | `{status, discord, whatsapp, dry_run}` |
 | POST | `/notify` | `{title, body, severity}`. En `NOTIFY_DRY_RUN=YES` : renvoie `{"status":"dry_run", …}` sans rien envoyer |
 
-## WATCHTOWER — `127.0.0.1:8830`
+## HAWKMAN — `127.0.0.1:8830`
 
 | Méthode | Chemin | Auth | Description |
 |---|---|---|---|

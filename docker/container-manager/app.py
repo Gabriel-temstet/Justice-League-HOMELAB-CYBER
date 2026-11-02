@@ -74,7 +74,7 @@ ROLES = {
     "green-lantern": ("GREEN LANTERN", "Notifications"), "justice-league-collectors": ("COLLECTORS", "Suricata / Zeek / Wazuh"),
     "oracle-cti": ("ORACLE", "CTI + OSINT passif"), "green-arrow": ("GREEN ARROW", "Découverte & scanner de ports"),
     "justice-league-soc": ("SOC COMMAND CENTER", "Tableau de bord SOC"), "justice-league-caddy": ("CADDY", "Proxy TLS local"),
-    "justice-league-watchtower": ("WATCHTOWER", "Veille cyber"), "justice-league-bug-bounty": ("BUG BOUNTY LAB", "Environnement isolé"),
+    "justice-league-hawkman": ("HAWKMAN", "Veille cyber"), "justice-league-bug-bounty": ("BUG BOUNTY LAB", "Environnement isolé"),
     "justice-league-container-manager": ("CONSOLE", "Cette interface"),
 }
 SECRET_RE = re.compile(r"PASS|TOKEN|KEY|SECRET|DSN|WEBHOOK|AUTH(?!ORIZED)|CREDENTIAL", re.I)
