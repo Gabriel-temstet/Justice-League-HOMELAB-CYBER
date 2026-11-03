@@ -2,7 +2,7 @@
 
 Plateforme **SOC / veille cyber / OSINT / audit réseau** auto-hébergée, orchestrée par Docker Compose, pilotée depuis une **console web** et un script unique (`justice.sh`). Fonctionne sur Linux (amd64, arm64) et macOS (Intel, Apple Silicon M1–M4).
 
-> Principe directeur : **l'IA analyse et propose, l'humain décide.** Aucune action sensible n'est déclenchée automatiquement.
+> Principe directeur : **l'IA analyse et propose, l'humain décide.** Aucune action sensible n'est déclenchée automatiquement. Les agents s'échangent des [prophéties](11-propheties.md) : tout ce qui est automatique est passif ou en lecture seule.
 
 ## Sommaire
 
@@ -18,6 +18,7 @@ Plateforme **SOC / veille cyber / OSINT / audit réseau** auto-hébergée, orche
 | 8 | [Sécurité](08-securite.md) | Modèle de menace, durcissement, cadre légal, bonnes pratiques |
 | 9 | [Dépannage](09-depannage.md) | Problèmes fréquents (Linux, macOS ARM64) et solutions |
 | 10 | [Développement](10-developpement.md) | Structure du dépôt, ajouter un outil/service, conventions, tests |
+| 11 | [Prophéties](11-propheties.md) | Boucle proactive ORACLE → GREEN ARROW / HAWKMAN / GREEN LANTERN : risque anticipé, vérifié, priorisé, notifié |
 
 ## Démarrage en 5 minutes
 
@@ -37,11 +38,11 @@ open http://127.0.0.1:8801    # Console (macOS) — xdg-open sous Linux
 | **MARTIAN-MANHUNTER** | Passerelle IA, mémoire d'enquête (PostgreSQL), corrélation | `martian-core`, `martian-db`, `martian-ollama` |
 | **BATMAN** | Orchestration (n8n) et normalisation des événements | `batman-n8n`, `batman-postgres`, `batman-normalizer` |
 | **COLLECTORS** | Lecture des journaux Suricata / Zeek / Wazuh | `justice-league-collectors` |
-| **ORACLE** | Renseignement sur les menaces (CTI, flux RSS) + OSINT passif | `oracle-cti` |
-| **GREEN ARROW** | Découverte d'actifs et scanner de ports | `green-arrow` |
+| **ORACLE** | Renseignement sur les menaces (CTI, flux RSS) + OSINT passif + **prophéties** (EPSS/KEV × inventaire) | `oracle-cti` |
+| **GREEN ARROW** | Découverte d'actifs, inventaire services/versions, scanner de ports, **vérification des prophéties** | `green-arrow` |
 | **GREEN LANTERN** | Notifications Discord / WhatsApp | `green-lantern` |
 | **SOC COMMAND CENTER** | Tableau de bord SOC, dossiers, assistant IA | `justice-league-soc` |
-| **HAWKMAN** | Veille cyber automatisée (RSS, CVE NVD, CISA KEV) | `justice-league-hawkman` |
+| **HAWKMAN** | Veille cyber automatisée (RSS, CVE NVD, CISA KEV), watchlist dynamique et score selon votre exposition | `justice-league-hawkman` |
 | **BUG BOUNTY LAB** | Environnement isolé pour tests autorisés | `justice-league-bug-bounty` |
 | **CADDY** | Proxy TLS local devant le SOC | `justice-league-caddy` |
 | **CONSOLE** | Gestion Docker + lancement des outils | `justice-league-container-manager` |

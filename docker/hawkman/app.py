@@ -46,6 +46,8 @@ def env_int(name, default):
 FETCH_INTERVAL = env_int("WATCH_INTERVAL", 1800)
 NVD_INTERVAL = env_int("WATCH_NVD_INTERVAL", 7200)
 KEV_INTERVAL = env_int("WATCH_KEV_INTERVAL", 21600)
+EXPOSURE_INTERVAL = env_int("WATCH_EXPOSURE_INTERVAL", 900)  # synchro inventaire + prophéties (MARTIAN)
+PROPHECY_BOOST = env_int("WATCH_PROPHECY_BOOST", 30)
 REPORT_HOUR = env_int("WATCH_REPORT_HOUR", 7)
 REPORT_MINUTE = env_int("WATCH_REPORT_MINUTE", 30)
 WEEKLY_DAY = env_int("WATCH_WEEKLY_DAY", 0)  # 0 = lundi
@@ -137,6 +139,9 @@ def init_db():
             create table if not exists meta(k text primary key, v text);
             """
         )
+        cols = {r["name"] for r in c.execute("pragma table_info(items)")}
+        if "boosted" not in cols:  # migration : élément déjà rehaussé par une prophétie
+            c.execute("alter table items add column boosted integer default 0")
 
 
 def meta_get(k, default=None):
@@ -163,7 +168,11 @@ def load_config():
     except Exception as ex:  # JSON invalide
         log("config illisible:", ex)
     extra = [w.strip().lower() for w in os.getenv("WATCH_KEYWORDS", "").split(",") if w.strip()]
-    cfg["watchlist"] = sorted(set(cfg["watchlist"] + extra))
+    try:  # produits réellement détectés par GREEN ARROW (synchro MARTIAN)
+        dyn = json.loads(meta_get("dyn_watchlist", "[]"))
+    except ValueError:
+        dyn = []
+    cfg["watchlist"] = sorted(set(cfg["watchlist"] + extra + dyn))
     return cfg
 
 
@@ -358,6 +367,53 @@ def push_martian():
     return ok
 
 
+def martian_get(path, params=None):
+    r = httpx.get(MARTIAN + path, headers={"X-AI-Gateway-Token": TOKEN}, params=params, timeout=15)
+    r.raise_for_status()
+    return r.json()
+
+
+def sync_watchlist():
+    """Watchlist dynamique : produits que GREEN ARROW a réellement trouvés sur le réseau."""
+    terms = set()
+    for a in martian_get("/inventory").get("assets", []):
+        for s in a.get("services", []):
+            p = (s.get("product") or "").strip().lower()
+            if len(p) >= 4:
+                terms.add(p)
+    meta_set("dyn_watchlist", json.dumps(sorted(terms)))
+    return len(terms)
+
+
+def apply_prophecies():
+    """Rehausse le score des éléments dont une CVE fait l'objet d'une prophétie ORACLE active
+    (c.-à-d. la CVE touche un service réellement exposé). Idempotent : un élément n'est rehaussé qu'une fois."""
+    rows = martian_get("/prophecies", {"status": "open,confirmed,notified,acknowledged",
+                                       "kind": "cve", "limit": 1000}).get("prophecies", [])
+    n = 0
+    with _db_lock, connect() as c:
+        for cve in {p["cve"].upper() for p in rows if p.get("cve")}:
+            cur = c.execute(
+                "update items set score=min(100,score+?), boosted=1, "
+                "hits=case when hits='' or hits is null then 'exposé' else hits||',exposé' end "
+                "where boosted=0 and instr(','||cves||',', ','||?||',')>0", (PROPHECY_BOOST, cve))
+            n += cur.rowcount
+    return n
+
+
+def run_exposure():
+    try:
+        w = sync_watchlist()
+        b = apply_prophecies()
+    except Exception as ex:
+        meta_set("last_exposure", now_ts())  # ne pas boucler à chaque tick si MARTIAN est absent
+        log("synchro exposition impossible (MARTIAN ?):", ex)
+        return 0
+    meta_set("last_exposure", now_ts())
+    log(f"exposition: {w} produit(s) en watchlist dynamique, {b} élément(s) rehaussé(s) par prophétie")
+    return b
+
+
 def notify(title, body, severity="info"):
     if not NOTIFY_ON:
         return False
@@ -376,7 +432,7 @@ def send_alerts():
                          (ALERT_MIN_SCORE,)).fetchall()
     if not rows:
         return 0
-    lines = [f"• [{r['score']}] {r['title'][:140]} ({r['source']}) {r['link']}" for r in rows]
+    lines = [f"• [{r['score']}]{' ⚠ EXPOSÉ' if r['boosted'] else ''} {r['title'][:140]} ({r['source']}) {r['link']}" for r in rows]
     if notify("HAWKMAN — alerte veille cyber", "\n".join(lines), "high"):
         with _db_lock, connect() as c:
             c.executemany("update items set alerted=1 where id=?", [(r["id"],) for r in rows])
@@ -567,7 +623,7 @@ def cleanup():
 
 
 # --------------------------------------------------------------------------- planificateur
-TASKS = {"fetch": run_fetch, "nvd": run_nvd, "kev": run_kev,
+TASKS = {"fetch": run_fetch, "nvd": run_nvd, "kev": run_kev, "exposure": run_exposure,
          "daily": lambda: run_report("daily"), "weekly": lambda: run_report("weekly")}
 
 
@@ -598,6 +654,8 @@ def scheduler():
                 run_task("fetch")
             if due("last_nvd", NVD_INTERVAL):
                 run_task("nvd")
+            if due("last_exposure", EXPOSURE_INTERVAL):
+                run_task("exposure")
             if is_quiet() and any(f.get("ok") for f in json.loads(meta_get("feed_status", "{}")).values()):
                 meta_set("bootstrapped", now_ts())  # premier cycle réussi : fin du mode silencieux
             push_martian()
@@ -643,6 +701,7 @@ def health():
     return {"status": "ok", "service": "HAWKMAN", "items": total,
             "last_fetch": meta_get("last_fetch"), "last_daily": meta_get("last_daily"),
             "feeds_ok": sum(1 for f in feeds.values() if f.get("ok")), "feeds_total": len(feeds),
+            "dyn_watchlist": len(json.loads(meta_get("dyn_watchlist", "[]"))), "last_exposure": meta_get("last_exposure"),
             "feeds_errors": {k: v["error"] for k, v in feeds.items() if not v.get("ok")}}
 
 

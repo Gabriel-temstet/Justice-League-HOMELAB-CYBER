@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 import psycopg
 from psycopg.rows import dict_row
+from psycopg.types.json import JsonbDumper
 
 DB_DSN = os.getenv("MARTIAN_DB_DSN", "postgresql://martian:martian@martian-db:5432/martian")
 
@@ -83,7 +84,11 @@ CREATE TABLE IF NOT EXISTS investigation_events (
 """
 
 def conn():
-    return psycopg.connect(DB_DSN, row_factory=dict_row)
+    c = psycopg.connect(DB_DSN, row_factory=dict_row)
+    # psycopg 3 n'adapte pas dict/list vers JSONB par défaut : sans cela, toute écriture
+    # de `data`/`evidence` échoue avec « cannot adapt type 'dict' ».
+    c.adapters.register_dumper(dict, JsonbDumper)
+    return c
 
 def init_db():
     with conn() as c:

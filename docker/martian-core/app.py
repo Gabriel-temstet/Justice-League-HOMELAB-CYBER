@@ -8,9 +8,11 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 import memory
+import prophecy
 import retention
 
 app = FastAPI(title="MARTIAN-MANHUNTER V5", version="5.0.0")
+app.include_router(prophecy.router)
 TOKEN = os.getenv("AI_GATEWAY_TOKEN", "")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
@@ -44,6 +46,7 @@ class InvestigateIn(BaseModel):
 @app.on_event("startup")
 def startup():
     memory.init_db()
+    prophecy.init_db()
     retention.start()
 
 def auth(x_ai_gateway_token: str | None):

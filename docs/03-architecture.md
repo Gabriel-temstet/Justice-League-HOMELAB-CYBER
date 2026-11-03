@@ -67,10 +67,11 @@ BATMAN (n8n) peut orchestrer un flux plus riche : réception → normalisation (
 - **ORACLE OSINT** (`osint_veille.py`) : DNS, sous-domaines via Certificate Transparency, certificat TLS, en-têtes HTTP → rapports Markdown.
 - **HAWKMAN** : flux RSS pondérés + CISA KEV + NVD ; score 0–100 (sévérité, watchlist, KEV, CVSS) ; rapports quotidien/hebdo (Markdown + HTML) ; alertes ≥ `WATCH_ALERT_MIN_SCORE` ; pousse les éléments à MARTIAN.
 - **veille_cyber.py** (intégré à HAWKMAN) : second collecteur RSS qui produit un rapport Markdown par nouvelle.
+- **Prophéties** : ORACLE croise l'inventaire de GREEN ARROW avec NVD/EPSS/KEV, GREEN ARROW vérifie, HAWKMAN priorise, GREEN LANTERN prévient. Voir [Prophéties](11-propheties.md).
 
 ### 3. Inventaire d'actifs
 
-GREEN ARROW exécute `nmap -sn` sur `AUTHORIZED_CIDRS` toutes les `DISCOVERY_INTERVAL` s et enregistre chaque hôte comme entité `asset` dans MARTIAN. En parallèle, `run_audits.py` produit les CSV d'audit dans `/results`.
+GREEN ARROW exécute `nmap -sn` sur `AUTHORIZED_CIDRS` toutes les `DISCOVERY_INTERVAL` s et enregistre chaque hôte comme entité `asset` dans MARTIAN, puis relève ses services et versions (`nmap -sV`, entité `asset_services`) tant que `SERVICE_SCAN=YES` (sinon : ancien comportement, découverte seule). En parallèle, `run_audits.py` produit les CSV d'audit dans `/results`.
 
 ### 4. Pilotage
 

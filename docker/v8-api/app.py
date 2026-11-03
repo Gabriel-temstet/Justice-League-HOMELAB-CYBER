@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 import psycopg
 from psycopg.rows import dict_row
+from psycopg.types.json import JsonbDumper
 import httpx
 
 DB=os.getenv('MARTIAN_DB_DSN','postgresql://martian:martian@martian-db:5432/martian')
@@ -25,7 +26,10 @@ CREATE TABLE IF NOT EXISTS soc_audit(id BIGSERIAL PRIMARY KEY,actor TEXT NOT NUL
 CREATE INDEX IF NOT EXISTS idx_soc_cases_updated ON soc_cases(updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_soc_notes_case ON soc_notes(case_id,created_at DESC);
 '''
-def db(): return psycopg.connect(DB,row_factory=dict_row)
+def db():
+    c=psycopg.connect(DB,row_factory=dict_row)
+    c.adapters.register_dumper(dict,JsonbDumper)  # psycopg3 n'adapte pas dict->JSONB par défaut
+    return c
 @app.on_event('startup')
 def init():
     with db() as c: c.execute(SCHEMA); c.commit()

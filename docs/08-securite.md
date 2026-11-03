@@ -14,7 +14,7 @@ En France, l'accès ou le maintien frauduleux dans un système de traitement aut
 
 | Principe | Mise en œuvre |
 |---|---|
-| L'IA propose, l'humain décide | `human_approval_required` dès `high` ; aucune remédiation automatique ; l'IA répond uniquement à partir des preuves fournies |
+| L'IA propose, l'humain décide | `human_approval_required` dès `high` ; aucune remédiation automatique ; l'IA répond uniquement à partir des preuves fournies. Les [prophéties](11-propheties.md) n'automatisent que des actions passives (relevé de versions, re-vérification ciblée, rescoring, notification) |
 | Moindre exposition | Tous les ports publiés sont liés à `127.0.0.1` ; aucun service n'est destiné à Internet |
 | Moindre privilège | Conteneurs durcis (lecture seule, `cap_drop: ALL`, `no-new-privileges`, utilisateur non-root pour HAWKMAN) ; seul GREEN ARROW reçoit `NET_RAW` |
 | Pas de secrets par défaut | `justice.sh check` refuse `CHANGE_ME` et les valeurs vides |

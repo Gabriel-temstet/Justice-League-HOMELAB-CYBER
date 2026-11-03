@@ -6,4 +6,6 @@ for d in $(echo "${OSINT_DOMAINS:-}" | tr ',;' '  '); do
   python /app/osint/osint_veille.py --add "$d"
 done
 ( while true; do python /app/osint/osint_veille.py --loop --hours "${OSINT_INTERVAL_HOURS:-6}"; sleep 60; done ) &
+# Prophéties (CVE x inventaire GREEN ARROW + dérives OSINT) -> MARTIAN ; relancé s'il s'arrête
+( while true; do python /app/prophet.py; sleep 60; done ) &
 exec python /app/app.py
